@@ -1,0 +1,145 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}
+    Search user
+{% endblock %}
+
+
+{% block main %}
+
+    {% include "alert.html" %}
+    
+    <h3>Search user form</h3>
+    {% if length > 0 %}
+        <table class="table table-striped">
+            <thead class="thead-light">
+                <th>Id</th><th>Username</th><th>Email</th><th>Join date</th><th>History</th>
+            </thead>
+            <tbody>
+                {% for row in rows: %}
+                <tr>
+                    <td>
+                        {{ row["id"] }}
+                    </td>
+                    <td>
+                        {{ row["username"] }}
+                    </td>
+                    <td>
+                        {{ row["email"] }}
+                    </td>
+                    <td>
+                        {{ row["join_date"] }}
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#viewHistory" onClick="view(`{{ row['id'] }}`)">View</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        <form action="/admin/search" method="post">
+            <div class="form-group">
+                <label for="username" class="col-sm-2 col-form-label">Username</label>
+                <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" value="">
+            </div>
+            <div class="form-group">
+                <label for="email" class="col-sm-2 col-form-label">Email</label>
+                <input class="form-control" name="email" placeholder="Email" type="text" value="">
+            </div>
+            <div class="form-group">
+                <label for="joindate" class="col-sm-2 col-form-label">Join date:</label>
+                <input type="date" class="form-control" id="joindate" name="joindate">
+            </div>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+    {% endif %}
+
+
+    <div class="modal fade bd-example-modal-lg" id="viewHistory" tabindex="-1" role="dialog" aria-labelledby="addNewVenue" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addNewVenue">History</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-body" id="modalBody">
+              
+                
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+    <script>
+
+        function view(id) {
+
+            $.post("/admin/search/history",{id : id}, function(data, status){
+                console.log(data)
+                console.log(status)
+                let tableHTML = `<table class="table table-striped">
+                                    <thead class="thead-light">
+                                        <th>
+                                            Order Id
+                                        </th>
+                                        <th>
+                                            Venue Type
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            User Id
+                                        </th>
+                                        <th>
+                                            Start Date
+                                        </th>
+                                        <th>
+                                            End Date
+                                        </th>
+                                        <th>
+                                            Payment Method
+                                        </th>
+                                        <th>
+                                            Paid
+                                        </th>
+                                        <th>
+                                            Cancelled
+                                        </th>
+                                        <tbody>
+                                `
+                if (status == "success") {
+                    let rows = data.dict
+                    for (let i = 0 ; i < rows.length ; i++) {
+                        console.log(rows[i])
+                        tableHTML += `<tr>
+                                <td> ${rows[i].order_id} </td>
+                                <td> ${rows[i].Type} </td>
+                                <td> ${rows[i].reference_name} </td>
+                                <td> ${rows[i].user_id} </td>
+                                <td> ${rows[i].start_date} </td>
+                                <td> ${rows[i].end_date} </td>
+                                <td> ${rows[i].payment_method} </td>
+                                <td> ${rows[i].paid == 1 ? "Yes" : "No"} </td>
+                                <td> ${rows[i].cancelled == 1 ? "Yes" : "No"} </td>
+                            </tr>`
+                            
+                    }
+                    tableHTML += "</tbody></table>"
+                    $("#modalBody").html(tableHTML)
+                } else {
+                    alert("Error!!")
+                }
+            });
+        }
+        
+    </script>
+{% endblock %}

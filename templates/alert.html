@@ -1,0 +1,27 @@
+<div class="alert alert-success" role="alert" style="display : none" id="success">
+
+</div>
+<div class="alert alert-danger" role="alert" style="display : none" id="failure">
+
+</div>
+
+<script>
+        window.addEventListener("DOMContentLoaded", function(){
+        var url_string = window.location.href
+        var url = new URL(url_string);
+        var msg = url.searchParams.get("msg");
+        var status = url.searchParams.get("status");
+
+        console.log(status)
+        console.log(msg)
+        
+        if (status == "1" && msg != null && msg != "") {
+            document.getElementById("success").style.display = "block";
+            document.getElementById("success").innerHTML = msg;
+        } else if (status == "2" && msg != null && msg != "") {
+            document.getElementById("failure").style.display = "block";
+            document.getElementById("failure").innerHTML = msg;
+        }
+
+    })
+</script>

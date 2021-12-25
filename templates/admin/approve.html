@@ -1,0 +1,95 @@
+{% extends "admin/layout.html" %}
+
+
+{% block title %}
+    Approve
+{% endblock %}
+
+{% block main %}
+
+
+    
+<table class="table table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                Admin Id
+            </th>
+            <th>
+                Username
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Join Date
+            </th>
+            <th>
+                Approve
+            </th>
+            <th>
+                Dismiss
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows: %}
+            <tr>
+                <td>
+                    {{ row["admin_id"] }}
+                </td>
+                <td>
+                    {{ row["username"] }}
+                </td>
+                <td>
+                    {{ row["email"] }}
+                </td>
+                <td>
+                    {{ row["join_date"] }}
+                </td>
+                <td>
+                    <button class="btn btn-primary" onClick="approve(`{{row['admin_id']}}`)">Approve</button>
+                </td>
+                <td>
+                    <button class="btn btn-primary" onClick="dismiss(`{{row['admin_id']}}`)">Dismiss</button>
+                </td>
+            </tr>
+        {% endfor %}
+
+        {% if length == 0 %}
+            <tr><td colspan="6">No new admin registration</td></tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<script>
+
+    function approve(id) {
+        console.log(id)
+
+        $.post("/admin/approve",{id : id}, function(data, status){
+            if (status == "success" && data == "1") {
+                alert("Update success")
+                window.location.reload()
+            } else {
+                alert("Update failed")
+            }
+        });
+    }
+
+    function dismiss(id) {
+        console.log(id)
+
+        $.post("/admin/dismiss",{id : id}, function(data, status){
+            if (status == "success" && data == "1") {
+                alert("Update success")
+                window.location.reload()
+            } else {
+                alert("Update failed")
+            }
+        });
+    }
+
+</script>
+
+{% endblock %}

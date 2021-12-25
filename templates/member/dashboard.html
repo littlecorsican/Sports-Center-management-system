@@ -1,0 +1,118 @@
+{% extends "member/layout.html" %}
+
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block main %}
+
+<div class="dashboard">
+    <div class="announcement encapsulated">
+        <h5>Announcement</h5>
+        <ul class="list-group">
+            <li class="list-group-item">
+                {{ rows["value"] }}
+            </li>
+        </ul>
+    </div>
+    <h5>What we provide</h5>
+    <div class="sports encapsulated">
+        {% for row in venue_type: %}
+            <div style="display:inline-block">
+                <p><img src="/static/member/{{ row['src'] }}" class="sports-icon" /></p>
+                <p>{{ row['Type'] }}</p>
+            </div>
+        
+        {% endfor %}
+    </div>
+    
+    <div class="amenities encapsulated">
+        <h5>Amenities</h5>
+        <div style="display:flex">
+            <div class="flexone"><img src="/static/member/vendingmachine.jpg" class="icon" />Drinks</div>
+            <div class="flexone"><img src="/static/member/restaurant.png" class="icon" />Restaurant</div>
+            <div class="flexone"><img src="/static/member/bathtub.jpg" class="icon" />Bathroom</div>
+            <div class="flexone"><img src="/static/member/parking.png" class="icon" />Parking</div>
+            <div class="flexone"><img src="/static/member/changingroom.jpg" class="icon" />Changing room</div>
+        </div>
+
+    </div>
+    <!-- <div class="contact encapsulated">
+    <h5>Contact Details</h5>
+
+        <p>Address</p>
+        <p>A-2-1, First Square @ Falim, Laluan Falim 2, Taman Falim Indah, 30200 Ipoh, Perak, Malaysia</p>
+        <br/>
+        <p>Phone Number</p>
+        <p>+60125280989</p>
+    </div> -->
+</div>
+
+<div class="floating-menu">
+    <p>Go to <a href="/member/book">booking</a> page </p><p>and start booking now!</p>
+</div>
+
+<style>
+
+    .floating-menu {
+        position : fixed;
+        padding : 9px;
+        top : 35%;
+        border-radius: 4px;
+        border : 1px solid darkcyan;
+        right : 0px;
+        background-color: darkcyan;
+        color : lightcyan
+
+    }
+
+    .floating-menu a {
+        text-decoration: none;
+        color : lightcyan
+    }
+
+    .floating-menu a:hover {
+        text-decoration: none;
+        color : lightpink
+    }
+
+.dashboard .announcement {
+
+}
+
+    .dashboard div {
+        margin : 5%;
+    }
+    .sports-icon {
+        width : 50px;
+        height : 50px;
+    }
+
+.dashboard .amenities {
+
+}
+
+.encapsulated {
+    border-radius: 4px;
+    background-color: lightyellow;
+    margin : 2.5rem;
+    padding : 3rem;
+}
+
+.flexone {
+    flex : 1
+}
+
+.icon {
+    width : 60px;
+    height : 60px
+}
+
+.contact {
+    text-align: Left;
+}
+
+</style>
+
+{% endblock %}

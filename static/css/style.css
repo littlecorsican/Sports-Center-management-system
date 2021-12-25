@@ -1,0 +1,99 @@
+.enter-button {
+    text-align: center;
+    margin : auto;
+    padding : 25px;
+    border : 1px solid black;
+    border-radius: 6px;
+    width : 50%;
+    cursor : pointer;
+    color : black;
+    background-color: #ffc107;
+}
+.enter-button:hover {
+    background-color: #ffc700;
+}
+
+.header {
+    width : 100%;
+    height : 250px;
+    padding : 50px;
+    text-align: center;
+    margin : auto;
+    background: linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5)), url("/static/member/futsal.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    
+}
+
+.header h1 {
+    opacity : 100%
+}
+
+.header h5{
+    opacity : 100%
+}
+
+.main {
+    min-height : 750px;
+    width : 100%;
+    background-color: yellowgreen;
+}
+
+.upper-block {
+    height: 1100px;
+    background: transparent;
+    padding : 15px;
+}
+
+.lower-block {
+    height: 250px;
+    background: transparent;
+    text-align: center;
+    padding : 15px;
+}
+
+.footer {
+    background-color: black;
+    width : 100%;
+    height : 200px;
+    display : flex;
+}
+
+.footer div{
+    flex : 1;
+    margin : 2.4rem 5rem;
+    color : #fff;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a:active {
+    text-decoration: none;
+}
+.cards {
+    margin : 45px 25px;
+}
+
+h3 {
+    margin : 35px 0px;
+}
+
+.round {
+    border-radius: 50%;
+    background-color: darkblue;
+    color : #fff;
+    width : 25px;
+    height : 25px;
+    display : inline-block;
+    margin : 4px;
+}

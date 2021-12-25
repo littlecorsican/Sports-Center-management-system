@@ -1,0 +1,52 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block main %}
+    <div class="alert alert-success" role="alert" style="display : none" id="success">
+        Registration Successful! Login now. Redirecting...
+    </div>
+    <div class="alert alert-danger" role="alert" style="display : none" id="failure">
+        Error during registration! 
+    </div>
+    <form action="/admin/login" method="post">
+        <div class="form-group">
+            <label for="username" class="col-sm-2 col-form-label">Username</label>
+            <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" value="">
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-sm-2 col-form-label">Password</label>
+            <input class="form-control" name="password" placeholder="Password" type="password" value="">
+        </div>
+        <button class="btn btn-primary" type="submit">Log In</button>
+    </form>
+    <div style="margin-top:25px">
+        No Account yet? Register <a href="/admin/register">here</a>
+    </div>
+
+    <script>
+
+        window.addEventListener("DOMContentLoaded", function(){
+            var url_string = window.location.href
+            var url = new URL(url_string);
+            var status = url.searchParams.get("status");
+            if (status == "1") {
+                document.getElementById("success").style.display="block"
+            } else if (status == "2") {
+                var url_string = window.location.href
+                var url = new URL(url_string);
+                var msg = url.searchParams.get("msg");
+                document.getElementById("failure").style.display="block"
+                if (msg) {
+                    document.getElementById("failure").innerText = msg;
+                }
+
+
+            }
+
+        })
+        
+    </script>
+{% endblock %}

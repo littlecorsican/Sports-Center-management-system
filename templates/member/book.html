@@ -1,0 +1,440 @@
+{% extends "member/layout.html" %}
+
+{% block title %}
+    Book a venue
+{% endblock %}
+
+{% block main %}
+
+{% include "alert.html" %}
+
+  <div class="modal fade" id="bookModal" tabindex="-1" role="dialog" aria-labelledby="bookModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookModalLabel">Book</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>  
+        <form action="/member/book/order" method="post" >
+            <div class="modal-body">
+                    <input type="hidden" id="venue_id" name="venue_id" />
+                <div class="form-group">
+                    <label for="form-date" class="col-sm-2 col-form-label">Date : </label>
+                    <input autocomplete="off" readonly autofocus class="form-control" type="text" id="form-date" name="form-date">
+                </div>
+                <div class="form-group">
+                    <label for="form-time" class="col-sm-2 col-form-label">Time : </label>
+                    <input autocomplete="off" autofocus class="form-control" id="form-time" name="form-time" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="form-hours" class="col-sm-3 col-form-label" style="margin-right:50px">Hours : </label>
+                    <select class="form-control" style="margin-right:100px" aria-label="Default select example" name="form-hours" id="form-hours" onChange="calculatePrice()" >
+                        {% for i in range(1, 23): %}
+                            <option value={{ i }}>{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="form-hours" class="col-sm-3 col-form-label" style="margin-right:50px">Payment Method : </label>
+                    <select class="form-control" style="margin-right:100px" aria-label="Default select example" name="form-payment_method" id="form-payment_method" >
+                            <option value="cash">Cash</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-data">Price : $ <span id="price"></span></div>
+                    <div class="form-data">
+                        Sum : $ <span id="totalPrice"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle-fill" viewBox="0 0 16 16" data-toggle="tooltip" data-placement="top" title="The amount you have to pay">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+                          </svg>
+                    </div> 
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Book</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+    <main>
+        <h3>Pick Date</h3>
+        <label for="type" class="col-sm-2 col-form-label">Date : </label>
+        <input type="date" class="form-control" id="date" name="date" onChange="dateChange(this.value)">
+
+        <h3>Select your sport</h3>
+        <div class="select-sport-div">
+            {% for ele in venue_type: %}
+                <div onClick="selectSport(`{{ ele['type_id'] }}`, this)" class="icon-container">
+                    <div><img src="/static/member/{{ ele['src'] }}" class="sports-icon" /></div>
+                    <div>{{ ele['Type'] }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="live-availability-container" id="liveAvailabilityContainer">
+            <div id="liveAvailabilityDiv" class="live-availability-div">
+                
+            </div>
+        </div>
+        
+    </main>
+
+    <script>
+
+        //set minimum date of date picker
+        let todayDate = new Date().getFullYear() + "-" + (new Date().getMonth()+1) + "-" + new Date().getDate();
+        console.log(todayDate)
+        document.getElementById("date").setAttribute("min", todayDate);
+
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();   
+        });
+
+        var state = {
+            sport_id : false,
+            selectedContainer : null,
+            selectedDate : null,
+            selectedTime : null,
+            selectedVenue : "",
+            selectedPrice : 0,
+            //selectedReference_name : null,
+            dateToDay : {
+                "sunday" : 0,
+                "monday" : 1,
+                "tuesday" : 2,
+                "wednesday" : 3,
+                "thursday" : 4,
+                "friday" : 5,
+                "saturday" : 6
+            }
+        }
+        
+        var url_string = window.location.href
+        var url = new URL(url_string);
+        var date = url.searchParams.get("date");
+        if (date) {
+            state.selectedDate = date
+        } else {
+            state.selectedDate = new Date().getFullYear() + "-" + (new Date().getMonth()+1) + "-" + new Date().getDate()
+        }
+
+        if (date == undefined || date == null) {
+            document.getElementById("date").value = new Date().getFullYear() + "-" + (new Date().getMonth()+1) + "-" + new Date().getDate()
+            
+        } else {
+            document.getElementById("date").value = new Date(date).getFullYear() + "-" + (new Date(date).getMonth()+1) + "-" + new Date(date).getDate()
+        }
+
+
+        function book(time, price, venue_id) {
+            console.log(time, price, "book")
+
+            state.selectedTime = time
+            state.selectedPrice = price
+            document.getElementById("form-date").value = changeDateFormat(state.selectedDate + " 00:00", "DDMMYY").replace(/-/g, "/")
+            document.getElementById("form-time").value = intToTime(state.selectedTime);
+            document.getElementById("price").innerText = price;
+            document.getElementById("venue_id").value = venue_id
+            state.selectedVenue = venue_id
+            calculatePrice()
+
+            $('#bookModal').modal()
+
+
+
+        }
+
+        function intToTime(int) {
+            n = parseInt(int)
+            if (n < 10) {
+                return "0" + n + ":00"
+            } else {
+                return n + ":00"
+            }
+        }
+
+        function selectSport(id, ele) {
+            console.log(id, ele)
+            state.sport_id = id
+            state.selectedContainer = ele
+            render()
+        }
+
+        function dateChange(date) {
+            console.log(date)   
+            window.location.href = "/member/book?date=" + date
+        }
+
+        function render() {
+            document.getElementById("liveAvailabilityContainer").style.display = (state.sport_id == 0 || state.sport_id == false) ? "none" : "block";
+            document.getElementById("liveAvailabilityDiv").innerHTML = ""
+
+            let icons = document.getElementsByClassName("icon-container")
+            for (let i = 0 ; i < icons.length; i++) {
+                icons[i].classList.remove("selected");
+            }
+
+            state.selectedContainer.classList.add("selected");
+
+            filtered_venue = venues.filter((item)=>{
+                return item.venue_type == state.sport_id
+            })
+            console.log("filtered_venue", filtered_venue)
+
+            for (let i = 0 ; i < filtered_venue.length ; i++) {
+                document.getElementById("liveAvailabilityDiv").innerHTML += componentLiveAvailability(filtered_venue[i])
+            }
+
+        }
+
+        function componentLiveAvailability(data) {
+            console.log("componentLiveAvailability",data)
+            let html = ""
+
+            //check if the date is on off day
+            console.log("day", state.selectedDate, new Date(state.selectedDate).getDay())
+            let offdays = config.offdays.split(" ")
+            console.log(offdays)
+            for (let i = 0 ; i < offdays.length; i++) {
+                console.log(offdays[i], state.dateToDay[offdays[i]])
+                if (state.dateToDay[offdays[i]] == new Date(state.selectedDate).getDay()) {
+                    html = `<div class="card-container">
+                            <div class='card-title'>Court ID : ${data.reference_name.charAt(0).toUpperCase() + data.reference_name.slice(1)}</div>
+                            <div class='card-title'>Price : $ ${data.priceperhour} Per Hour</div>
+                            <div><p>Today the center is closed, please visit our about us page to know more about off days</p></div>
+                        </div>`
+                    return html;
+                }
+            }  
+
+            if (data.under_maintenance == "1") {
+                html = `<div class="card-container">
+                        <div class='card-title'>Court ID : ${data.reference_name.charAt(0).toUpperCase() + data.reference_name.slice(1)}</div>
+                        <div class='card-title'>Price : $ ${data.priceperhour} Per Hour</div>
+                        <div><p>This venue is currently under maintenance.<p> <p>Please check back later.</p></div>
+                    </div>`
+                return html;
+            }
+
+
+            html = `
+                <div class="card-container">
+                    <div class='card-title'>Court ID : ${data.reference_name.charAt(0).toUpperCase() + data.reference_name.slice(1)}</div>
+                    <div class='card-title'>Price : $ ${data.priceperhour} Per Hour</div>
+                    <table>
+                        <thead>
+                            <th>Time</th>
+                            <th>Availablility</th>
+                        </thead>
+                        <tbody>
+            `;
+
+
+
+
+
+            for (let i = 0 ; i <= 23; i++) {
+                if (i >= parseInt(config.daily_start.split(":")[0]) && i < parseInt(config.daily_end.split(":")[0]) ) {  // check if within opening hours
+                    let booked = false
+                    for (let o = 0 ; o < orders.length ; o++) {
+                        let startdate = changeDateFormat(orders[o].start_date, "YYMMDDTT")
+                        let enddate = changeDateFormat(orders[o].end_date, "YYMMDDTT")
+                        let starthour = new Date(startdate).getHours()
+                        let endhour = new Date(enddate).getHours()
+                        // console.log("startdate", startdate)
+                        // console.log("enddate", enddate)
+                        // console.log("orders.reference_name", orders[o].reference_name)
+                        // console.log("data.reference_name", data.reference_name)
+                        // console.log("orders.venue_type", orders[o].venue_id)
+                        // console.log('state.sport_id', state.sport_id)
+                        if (i >= starthour && i < endhour && orders[o].venue_id == data.venue_id /*&& orders[o].reference_name == data.reference_name*/) {
+                            booked = true;
+                            break
+                        } 
+                    }
+                    if (booked) {
+                        html += `
+                                <tr><td>${i} : 00</td><td><span class="red-text">Booked</span></td></tr>
+                            `   
+                    } else {
+                        html += `
+                                <tr><td>${i} : 00</td><td><span class="green-text book-button" onClick="book(${i}, ${data.priceperhour}, ${data.venue_id})">Book now</span></td></tr>
+                            `  
+                    }
+                }
+            };
+            html += `</tbody></html>`;
+            return html;
+        }
+
+        function changeDateFormat(date, format) {
+            dateSplit = date.split(" ")[0]
+            time = date.split(" ")[1]
+            // console.log("changeDateFormat", dateSplit, time)
+            if (format == "YYMMDDTT") {
+                let day = dateSplit.split("/")[0]
+                let month = dateSplit.split("/")[1]
+                let year = dateSplit.split("/")[2]
+                return year + "-" + month + "-" + day + " " + time
+
+            } else if (format == "DDMMYYTT") {
+                let year = dateSplit.split("/")[0]
+                let month = dateSplit.split("/")[1]
+                let day = dateSplit.split("/")[2]
+                return day + "-" + month + "-" + year + " " + time
+            } else if (format == "DDMMYY") {
+                let year = new Date(date).getFullYear();
+                let month = (new Date(date).getMonth()+1);
+                let day = new Date(date).getDate();
+                console.log(year, month, day)
+                return day + "-" + month + "-" + year
+            }
+        }
+
+        function toObject(arr) {
+            var rv = {};
+            for (var i = 0; i < arr.length; ++i)
+                rv[arr[i].key] = arr[i].value;
+            return rv;
+        }
+
+        function checkAvailability(data) {
+            for (let i = 0 ; i < orders.length ; i++) {
+                time = orders
+                //if (orders.)
+
+            };
+        }
+
+        var venue_type = [];
+        var venues = [];
+        var config = [];
+        var orders = [];
+
+        {% for ele in venue_type: %}
+        venue_type.push({
+                src : `{{ ele['src'] }}`,
+                Type : `{{ ele['Type'] }}`,
+                type_id : `{{ ele['type_id'] }}`,
+            })
+        {% endfor %}
+
+        {% for ele in venues: %}
+        venues.push({
+                venue_id : `{{ ele['venue_id'] }}`,
+                venue_type : `{{ ele['venue_type'] }}`,
+                under_maintenance : `{{ ele['under_maintenance'] }}`,
+                reference_name : `{{ ele['reference_name'] }}`,
+                priceperhour : `{{ ele['priceperhour'] }}`,
+            })
+        {% endfor %}
+
+        {% for ele in config: %}
+        config.push({
+                key : `{{ ele['key'] }}`,
+                value : `{{ ele['value'] }}`,
+                name : `{{ ele['name'] }}`,
+
+            })
+        {% endfor %}
+
+        {% for ele in orders: %}
+        orders.push({
+            order_id : `{{ ele['order_id'] }}`,
+                venue_id : `{{ ele['venue_id'] }}`,
+                start_date : `{{ ele['start_date'] }}`,
+                end_date : `{{ ele['end_date'] }}`,
+                payment_method : `{{ ele['payment_method'] }}`,
+                reference_name : `{{ ele['reference_name'] }}`,
+                cancelled : `{{ ele['cancelled'] }}`,
+            })
+        {% endfor %}
+
+        console.log("venue_type", venue_type)
+        console.log("venues", venues)
+        console.log("config", config)
+        console.log("config", toObject(config))
+        console.log("orders", orders)
+
+        config = toObject(config)
+
+        function calculatePrice() {
+            price = state.selectedPrice
+            hours = document.getElementById("form-hours").value
+            console.log(price, hours)
+            total = parseInt(hours) * price
+            document.getElementById("totalPrice").innerText = total;
+        }
+
+    </script>
+
+    <style>
+        .sports-icon {
+            width : 50px;
+            height : 50px;
+        }
+        .icon-container {
+            margin : 8px;
+            display : inline-block;
+            padding : 6px;
+            cursor : pointer;
+        }
+        .icon-container:hover {
+            border-radius: 4px;
+            border : 1px solid black;
+            padding : 10px;
+        }
+        .icon-container:active {
+            background-color: darkgrey;
+        }
+        .select-sport-div {
+            width : 80%;
+            text-align: center;
+            margin : auto;
+        }
+        .live-availability-container {
+            display : none;
+        }
+        .card-container {
+            display : inline-block;
+            border-radius: 4px;
+            border : 1px solid black;
+            width : 300px; 
+            margin : 10px;
+            padding : 12px;
+            vertical-align: text-top;
+            min-height : 514px;
+        }
+        .live-availability-div {
+            padding : 8px;
+            margin : 6px;
+        }
+        .selected {
+            background-color : salmon;
+        }
+        .red-text {
+            color : red
+        }
+        .green-text {
+            color : greenyellow;
+        }
+        .book-button {
+            cursor : pointer;
+            padding : 3px;
+            margin:3px;
+            border-radius: 4px;
+            border : 1px solid greenyellow;
+            background-color: green;
+        }
+        .form-data {
+            width :55%;
+            margin :6px;
+            text-align: center;
+        }
+    </style>
+{% endblock %}

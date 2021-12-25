@@ -1,0 +1,175 @@
+{% extends "admin/layout.html" %}
+
+
+{% block title %}
+    Orders
+{% endblock %}
+
+{% block main %}
+
+<div class="date-form">
+    <!-- <form action="/admin/orders" method="post">  -->
+        <label for="type" class="col-sm-2 col-form-label">Date : </label>
+        <input type="date" class="form-control" id="date" name="date" onChange="filterChange()">
+    <!-- </form> -->
+        <label for="type" class="col-sm-2 col-form-label">Venue : </label>
+        <select class="form-select select-type" aria-label="Default select example" name="type" id="type" onChange="filterChange()">
+            <option value="All">ALL</option>
+            {% for type in venue_type: %}
+                <option value="{{ type['type_id'] }}">{{ type['Type'] }}</option>
+            {% endfor %}
+
+        </select>
+
+        <label for="type" class="col-sm-2 col-form-label">Paid : </label>
+        <select class="form-select select-type" aria-label="Default select example" name="paid" id="paid" onChange="filterChange()">
+            <option value="both">Both</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+        </select>
+        
+</div>
+    
+<table class="table table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                Order Id
+            </th>
+            <th>
+                Venue Type
+            </th>
+            <th>
+                Venue name
+            </th>
+            <th>
+                Username
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Start
+            </th>
+            <th>
+                End
+            </th>
+            <th>
+                Payment Method
+            </th>
+            <th>
+                Paid
+            </th>
+            <th>
+                Cancel
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows: %}
+            <tr>
+                <td>
+                    {{ row["order_id"] }}
+                </td>
+                <td>
+                    {{ row["Type"] }}
+                </td>
+                <td>
+                    {{ row["reference_name"] }}
+                </td>
+                <td>
+                    {{ row["username"] }}
+                </td>
+                <td>
+                    {{ row["name"] }}
+                </td>
+                <td>
+                    {{ row["start_date"] }}
+                </td>
+                <td>
+                    {{ row["end_date"] }}
+                </td>
+                <td>
+                    {{ row["payment_method"] }}
+                </td>
+                <td>
+                    {{ 'Yes' if row["paid"] == 1 else 'No' }}
+                </td>
+                <td>
+                    {% if row["cancelled"] == 0 %}
+                        <button class="btn btn-primary" onClick="cancel(`{{ row['order_id'] }}`)">Cancel</button>
+                    {% else %}
+                        Cancelled
+                    {% endif %}
+                </td>
+
+            </tr>
+        {% endfor %}
+        {% if length == 0 %}
+            <tr><td colspan="10">No Orders</td></tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<script>
+
+    var url_string = window.location.href
+    var url = new URL(url_string);
+    var d = url.searchParams.get("date") || new Date().getDate() + "-" + (new Date().getMonth()+1) + "-" + new Date().getFullYear();
+    var t = url.searchParams.get("type") || "All";
+    var p = url.searchParams.get("paid") || "both";
+
+    console.log(d, t, p)
+
+    document.getElementById("date").value = d
+    document.getElementById("type").value = t
+    document.getElementById("paid").value = p
+
+
+    function filterChange() {
+
+        d = document.getElementById("date").value || ""
+        t = document.getElementById("type").value || ""
+        p = document.getElementById("paid").value || ""
+
+        console.log(d)
+        console.log(t)
+        console.log(p)
+
+        location.href = "/admin/orders?date=" + d + "&type=" + t + "&paid=" + p ; 
+    }
+
+    function cancel(id) {
+        console.log(id)
+
+        let output = confirm("Are you sure you want to cancel item Id number " + id + " ?");
+
+        if (output != true) {
+            return
+        }
+
+        $.post("/admin/orders/cancel",{id : id}, function(data, status){
+            console.log(status)
+            console.log(data)
+            if (data == "Updated successfully") {
+                alert("Item cancelled")
+                window.location.reload()
+            } else {
+                alert("Cancel failed")
+            }
+        });
+
+
+    }
+
+</script>
+
+<style>
+    .date-form {
+        margin : 9px;
+    }
+
+</style>
+
+
+{% endblock %}

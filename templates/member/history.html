@@ -1,0 +1,94 @@
+{% extends "member/layout.html" %}
+
+
+{% block title %}
+    Orders
+{% endblock %}
+
+{% block main %}
+    
+<table class="table table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                Order Id
+            </th>
+            <th>
+                Venue type
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Start
+            </th>
+            <th>
+                End
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Payment method
+            </th>
+            <th>
+                Paid
+            </th>
+            <th>
+                Cancelled
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows: %}
+            <tr>
+                <td>
+                    {{ row["order_id"] }}
+                </td>
+                <td>
+                    {{ row["Type"] }}
+                </td>
+                <td>
+                    {{ row["reference_name"] }}
+                </td>
+                <td>
+                    {{ row["start_date"] }}
+                </td>
+                <td>
+                    {{ row["end_date"] }}
+                </td>
+                <td>
+                    {{ row["price"] }}
+                </td>
+                <td>
+                    {{ row["payment_method"] }}
+                </td>
+                <td>
+                    {{ 'Yes' if row["paid"] == 1 else 'No' }}
+                </td>
+                <td>
+                    {{ 'Yes' if row["cancelled"] == 1 else 'No' }}
+                </td>
+            </tr>
+        {% endfor %}
+        {% if length == 0 %}
+            <tr><td colspan="8">No History</td></tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<script>
+
+ 
+
+    
+
+</script>
+
+<style>
+
+
+</style>
+
+
+{% endblock %}

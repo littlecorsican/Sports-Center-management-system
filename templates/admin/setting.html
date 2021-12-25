@@ -1,0 +1,422 @@
+{% extends "admin/layout.html" %}
+
+
+{% block title %}
+    Setting
+{% endblock %}
+
+{% block main %}
+
+{% include "alert.html" %}
+
+
+<h3>General Configuration </h3>
+    
+<table class="table table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                Settings
+            </th>
+            <th>
+                Value
+            </th>
+            <th>
+                
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in config: %}
+            <tr>
+                <td>
+                    {{ row["name"] }}
+                </td>
+                <td>
+                    {{ row["value"] }}
+                </td>
+                <td>
+                    <button class="btn btn-primary" onClick="editConfig(`{{ row['key'] }}`)">Edit</button>
+                </td>
+
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+  </svg> Note : Time value has to be in the 24 hour format. Eg : 08:00 or 23:00
+
+
+  
+<h3>Venue setting</h3>
+    
+<table class="table table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Under Maintenance
+            </th>
+
+            <th>
+                Maintenance
+            </th>
+            <th>
+                Delete
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in venues: %}
+            <tr>
+                <td>
+                    {{ row["venue_id"] }}
+                </td>
+                <td>
+                    {{ row["Type"] }}
+                </td>
+                <td>
+                    {{ row["reference_name"] }} 
+                </td>
+                <td>
+                    {{ "No" if row["under_maintenance"] == 0 else "Yes"  }}
+                </td>
+                <td>
+                    <button class="btn btn-primary" onClick="turnOn(`{{ row['venue_id'] }}`, `{{ row['under_maintenance'] }}`)">
+                        {{ "Turn on" if row['under_maintenance'] == 0 else "Turn Off" }} 
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-primary" onClick="deleteVenue(`{{ row['venue_id'] }}`)">Delete</button>
+                </td>
+
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</br>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNewVenueModal">
+    Add new venue
+</button>
+
+<div class="modal fade" id="addNewVenueModal" tabindex="-1" role="dialog" aria-labelledby="addNewVenue" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addNewVenue">Add new venue form</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/admin/setting/add" method="post"> 
+        <div class="modal-body">
+          
+            <div class="add-form">
+
+                <div class="form-group">
+                    <label for="type" class="col-sm-2 col-form-label">Type : </label>
+                    <select class="form-select select-type" aria-label="Default select example" name="type" >
+                        {% for type in venue_type: %}
+                            <option value="{{ type['type_id'] }}">{{ type['Type'] }}</option>
+                        {% endfor %}
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 col-form-label">Name : </label> 
+                    <input autocomplete="off" autofocus class="form-control" name="name" placeholder="Name" type="text" required >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle-fill" viewBox="0 0 16 16" data-toggle="tooltip" data-placement="top" title="Unique identifier for this court">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+                      </svg>
+                </div>
+                <div class="form-group">
+                    <label for="priceperhour" class="col-sm-2 col-form-label">Price per hour : </label>
+                    <input autocomplete="off" autofocus class="form-control" name="priceperhour" placeholder="Price  $" type="text" required >
+                </div>
+            </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Add</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <h3>Venue type </h3>
+    
+  <table class="table table-striped">
+      <thead class="thead-light">
+          <tr>
+              <th>
+                  Id
+              </th>
+              <th>
+                  Type
+              </th>
+              <th>
+                  Delete
+              </th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for row in venue_type: %}
+              <tr>
+                  <td>
+                      {{ row["type_id"] }}
+                  </td>
+                  <td>
+                    {{ row["Type"] }}
+                  </td>
+                  <td>
+                      <button class="btn btn-primary" onClick="deleteVenueType(`{{ row['venue_id'] }}`)">Delete</button>
+                  </td>
+  
+              </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNewVenueTypeModal">
+    Add new venue type
+</button>
+
+<div class="modal fade" id="addNewVenueTypeModal" tabindex="-1" role="dialog" aria-labelledby="addNewVenueType" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addNewVenueType">Add new venue type form</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="add-type-form">
+                <h3>Add new venue type form</h3>
+                <form action="/admin/setting/addtype" method="post"> 
+                    <div class="form-group">
+                        <label for="venue-type" class="col-sm-2 col-form-label">Venue Type : </label>
+                        <input autocomplete="off" autofocus class="form-control" name="venuetype" placeholder="Type" type="text" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Add</button>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="offdaysModal" tabindex="-1" role="dialog" aria-labelledby="offdays" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="offdays">Set off days</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/setting/setOffdays" method="post">
+                    <div class="form-group" style="margin-left:35px">
+                        <label class="col-sm-2 col-form-label">Off days : </label>
+                    
+                        <div>
+                            <input class="form-check-input" type="checkbox" value="monday" id="monday" name="offdays">
+                            <label class="form-check-label" for="offdays">
+                                Monday
+                            </label>
+                        </div>
+                    
+                        <div>
+                            <input class="form-check-input" type="checkbox" value="tuesday" id="tuesday" name="offdays">
+                            <label class="form-check-label" for="offdays">
+                                Tuesday
+                            </label>
+                        </div>
+                    
+                        <div>
+                            <input class="form-check-input" type="checkbox" value="wednesday" id="wednesday" name="offdays">
+                            <label class="form-check-label" for="offdays">
+                                Wednesday
+                            </label>
+                        </div>
+                    
+                        <div>
+                            <input class="form-check-input" type="checkbox" value="thursday" id="thursday" name="offdays">
+                            <label class="form-check-label" for="offdays">
+                                Thursday
+                            </label>
+                        </div>
+                    
+                        <div>
+                            <input class="form-check-input" type="checkbox" value="friday" id="friday" name="offdays">
+                            <label class="form-check-label" for="offdays">
+                                Friday
+                            </label>
+                        </div>
+                    
+                        <div>
+                            <input class="form-check-input" type="checkbox" value="saturday" id="saturday" name="offdays">
+                            <label class="form-check-label" for="offdays">
+                                Saturday
+                            </label>
+                        </div>
+                    
+                        <div>
+                            <input class="form-check-input" type="checkbox" value="sunday" id="sunday" name="offdays">
+                            <label class="form-check-label" for="offdays">
+                                Sunday
+                            </label>
+                        </div>
+                    
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit">Set</button>
+                    </div>
+                </form>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();   
+    });
+
+    function turnOn(id, onoff) {
+        console.log(id)
+        onoff = onoff == 0 ? 1 : 0
+        console.log(onoff)
+
+        $.post("/admin/setting/onmaintenance",{id : id, action : onoff}, function(data, status){
+            console.log(data)
+            console.log(status)
+        if (status == "success" && data == "Updated successfully") {
+            alert("Update success")
+            window.location.reload()
+        } else {
+            alert("Update failed")
+        }
+    });
+    }
+
+    function deleteVenue(id) {
+        console.log(id)
+
+        let output = confirm("Are you sure you want to delete item Id number " + id + " ?");
+
+        if (output != true) {
+            return
+        }
+
+        $.post("/admin/setting/deleteVenue",{id : id}, function(data, status){
+            if (status == "success" && data == "success") {
+                alert("Item deleted")
+                window.location.reload()
+            } else {
+                alert("Delete failed")
+            }
+        });
+    }
+
+    function deleteVenueType(id) {
+        console.log(id)
+
+        let output = confirm("Are you sure you want to delete item Id number " + id + " ?");
+
+        if (output != true) {
+            return
+        }
+
+        $.post("/admin/setting/deleteVenueType",{id : id}, function(data, status){
+            if (status == "success" && data == "success") {
+                alert("Item deleted")
+                window.location.reload()
+            } else {
+                alert("Delete failed")
+            }
+        });
+    }
+
+    function editConfig(key) {
+
+        if (key == "offdays") {
+            $("#offdaysModal").modal()
+        } else {
+            let newValue = prompt("Please input new value")
+
+            if (newValue) {
+
+                $.post("/admin/setting/set",{key : key, newValue:newValue}, function(data, status){
+                    console.log(data)
+                    console.log(status)
+                    if (data == "success") {
+                        alert("Value updated")
+                        window.location.reload()
+                    } else {
+                        alert("Update failed")
+                    }
+                });
+            } 
+        }
+    }
+
+
+</script>
+
+<style>
+    .add-form .select-type {
+        width : auto;
+        display : inline-block
+    }
+    .add-form .form-group {
+        margin : 10px;
+    }
+    .add-form {
+        text-align: left;
+        padding : 0% 20%;
+    }
+
+    .add-form label {
+        max-width: 29%;
+    }
+
+    .modal-dialog {
+        min-width : 900px
+    }
+    
+</style>
+
+{% endblock %}
+
+
+

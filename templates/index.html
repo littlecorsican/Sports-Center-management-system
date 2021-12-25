@@ -1,0 +1,184 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- http://getbootstrap.com/docs/4.5/ -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+
+        <link href="/static/css/style.css" rel="stylesheet">
+
+        <!-- http://getbootstrap.com/docs/4.5/ -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+        <title>YX Sports Centre</title>
+    </head>
+    <body>
+        <header class="header">
+            <h1>YX Sports Centre</h1>
+            <h5>Book a sports venue from the comfort of your home and pay later!</h5>
+        </header>
+        <main class="main">
+            <div class="upper-block">
+                <h3>Avalability</h3>
+                <table class="info">
+                    <tbody>
+                        {% for row in rows: %}
+                            <tr>
+                                <td>
+                                    {{ row["Type"] }}
+                                </td>
+                                <td>
+                                    {{ row["COUNT(venues.venue_id)"] }}
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                        {% if length == 0 %}
+                            <tr><td colspan="9">We are under maintenance, please return later!</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                <h3>Opening hours</h3>
+                <table class="info">
+                    <tbody>
+                        {% for ele in config: %}
+                            {% if ele["key"] != "announcement" %}
+                                <tr>
+                                    <td>
+                                        {{ ele["name"] }}
+                                    </td>
+                                    <td>
+                                        {{ ele["value"] }}
+                                    </td>
+                                
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        {% if length == 0 %}
+                            <tr><td colspan="9">We are under maintenance, please return later!</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+
+                <h3>How to use this site</h3>
+                <div class="row cards">
+                    <div class="col-sm-3">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title"><div class="round">1</div>Sign up</h5>
+                          <p class="card-text">Register an account with us.</p>
+                          <br/>
+                          <a href="/member/register" class="btn btn-primary">Register</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title"><div class="round">2</div>Navigate</h5>
+                          <p class="card-text">Go to the booking page.</p>
+                          <br/>
+                          <a href="/member/book" class="btn btn-primary">Navigate</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title"><div class="round">3</div>Search</h5>
+                            <p class="card-text">Search for the sports and venue you want, check for availability on our page.</p>
+                            <a href="/member/book" class="btn btn-primary">Search</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title"><div class="round">4</div>Book</h5>
+                            <p class="card-text">Book a slot with us using the online form with 0 deposit!</p>
+                            <a href="/member/book" class="btn btn-primary">Book</a>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+                <div class="row cards">
+                    <div class="col-sm-3">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title"><div class="round">5</div>Show up!</h5>
+                          <p class="card-text">Pay at our counter and enjoy the facilities we provide</p>
+                          <br/>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lower-block">
+                <a href="/member/login">
+                    <div class="enter-button">
+                        <h1>Enter</h1>
+                    </div>
+                </a>
+                <a href="/admin/login" style="color:darkgoldenrod">
+                    Admin click here
+                </a>
+            </div>
+
+
+
+
+
+        </main>
+
+
+
+        <footer class="footer">
+            <div class="flex-one">
+                <p>Address : 23 Jln Tengku Kelana, 41000, Selangor.</p>
+                <p>Telephone : +60 (0)3 4270-1031 </p>
+                <p><a href="mailto:cyxtf@hotmail.com" >Email : cyxtf@hotmail.</a></p>
+            </div>
+            <div class="flex-one">
+                <a href="/member/about">About us</a>
+            </div>
+        </footer>
+
+        <style>
+            .upper-block {
+                text-align: center;
+            }
+            .info {
+                text-align: center;
+                margin : auto;
+            }
+            .info td {
+                padding : 25px 50px;
+                border : 1px solid lightcoral;
+                border-radius: 4px;
+            }
+            .footer {
+                display : flex
+            }
+            .flex-one {
+
+            }
+            a {
+                text-decoration: none;
+                color : #fff
+            }
+            a:visited {
+                text-decoration: none;
+                color : #fff
+            }
+            a:active {
+                text-decoration: none;
+                color : #fff
+            }
+        </style>
+    </body>
+</html>

@@ -1,0 +1,114 @@
+{% extends "member/layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <div class="alert alert-success" role="alert" style="display : none" id="success">
+        Registration Successful! Login now. Redirecting...
+    </div>
+    <div class="alert alert-danger" role="alert" style="display : none" id="failure">
+        Error during registration! 
+    </div>
+    <h3>Registration page for member</h3>
+    </br>
+    <form action="/member/register" method="post" class="validation"> <!-- onsubmit="validationFunc(event)"-->
+        <div class="form-group">
+            <label for="username" class="col-sm-2 col-form-label">Username : </label>
+            <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" required>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-2 col-form-label">Name : </label>
+            <input autocomplete="off" autofocus class="form-control" name="name" placeholder="Name" type="text" required>
+        </div>
+        <div class="form-group">
+            <label for="email" class="col-sm-2 col-form-label">Email : </label>
+            <input autocomplete="off" autofocus class="form-control" name="email" placeholder="Email" type="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-sm-2 col-form-label">Password : </label>
+            <input class="form-control" name="password" placeholder="Password" type="password" required >
+            <div class="invalid-feedback" id="validationPw">
+                Please input password with alhpaberts and numbers of minimum 9 letters only
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="confirmation" class="col-sm-2 col-form-label">Reinput Password : </label>
+            <input class="form-control" name="confirmation" placeholder="Reinput Password" type="password" required>
+            <div class="invalid-feedback" id="validationPw2">
+                Password and reinput password not the same
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Register</button>
+    </form>
+    <div style="margin-top:25px">
+        Already have an account? login <a href="/member/login">here</a>
+    </div>
+
+
+    <script>
+
+        // function validationFunc(event) {
+        
+
+        //     let regex = new RegExp("{{ regex }}")
+
+        //     pwVal = document.getElementsByName("password")[0].value;
+
+        //     console.log(pwVal , regex)
+
+        //     let r = regex.test(pwVal)
+
+        //     if (!r) {
+        //         event.preventDefault();
+        //         document.get
+        //     }
+             
+        // };
+
+        document.getElementsByName("password")[0].addEventListener("change", function(){
+            let regex = new RegExp("{{ regex }}")
+            let r = regex.test(this.value)
+            if (!r) {
+                document.getElementById("validationPw").style.display = "block"
+            } else {
+                document.getElementById("validationPw").style.display = "none"
+            }
+        })
+
+        document.getElementsByName("confirmation")[0].addEventListener("change", function(){
+            if (this.value != document.getElementsByName("password")[0].value) {
+                document.getElementById("validationPw2").style.display = "block"
+            } else {
+                document.getElementById("validationPw2").style.display = "none"
+            }
+        })
+
+        window.addEventListener("DOMContentLoaded", function(){
+            var url_string = window.location.href
+            var url = new URL(url_string);
+            var status = url.searchParams.get("status");
+            if (status == "1") {
+                document.getElementById("success").style.display="block"
+                setTimeout(function(){
+                    window.location.href = "/member/login"
+                }, 2500)
+            } else if (status == "2") {
+                var url_string = window.location.href
+                var url = new URL(url_string);
+                var msg = url.searchParams.get("msg");
+                document.getElementById("failure").style.display="block"
+                if (msg) {
+                    document.getElementById("failure").innerText = msg;
+                }
+
+
+            }
+
+        })
+        
+    </script>
+{% endblock %}
+
+
